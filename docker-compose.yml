@@ -1,0 +1,88 @@
+version: '2'
+
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/etc/nginx/vhost.d"
+      - "./proxy-default.conf:/etc/nginx/conf.d/my-proxy.default.conf:ro"
+      - "/usr/share/nginx/html"
+      - "/var/run/docker.sock:/tmp/docker.sock:ro"
+      - "./le-cert:/etc/nginx/certs:ro"
+    labels:
+      com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy: "true"
+
+  letsencrypt-nginx-proxy-companion:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    restart: unless-stopped
+    depends_on:
+      - nginx-proxy
+    container_name: le-proxy-companion
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./le-cert:/etc/nginx/certs:rw"
+    volumes_from:
+      - nginx-proxy
+
+  keycloak:
+    image: jboss/keycloak
+    links:
+      - keycloak-postgres:postgres
+    ports:
+      - 8080:8080
+    volumes:
+      - ./keycloak:/opt/jboss/keycloak
+    environment:
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=admin
+      - "PROXY_ADDRESS_FORWARDING=true"
+      - VIRTUAL_PORT=8080
+      - VIRTUAL_HOST=kc.domain.com
+      - LETSENCRYPT_HOST=kc.domain.com
+      - LETSENCRYPT_EMAIL=email@domain.com
+
+  keycloak-postgres:
+    image: postgres
+    environment:
+      - POSTGRES_DB=keycloak
+      - POSTGRES_USER=keycloak
+      - POSTGRES_PASSWORD=keycloak
+
+  nextcloud:
+    image: hoellen/nextcloud
+    environment:
+      - UPLOAD_MAX_SIZE=10G
+      - APC_SHM_SIZE=128M
+      - OPCACHE_MEM_SIZE=128
+      - CRON_PERIOD=15m
+      - TZ=Europe/Berlin
+      - DOMAIN=nc.domain.com
+      - ADMIN_USER=admin
+      - ADMIN_PASSWORD=admin
+      - DB_TYPE=mysql
+      - DB_NAME=nextcloud
+      - DB_USER=nextcloud
+      - DB_PASSWORD=nextcloud
+      - DB_HOST=nc-db
+    volumes:
+      - ./nc/nc-data:/data
+      - ./nc/nc-config:/config
+      - ./nc/nc-apps:/apps2
+      - ./nc/nc-themes:/nextcloud/themes
+    environment:
+      - VIRTUAL_HOST=nc.domain.com
+      - LETSENCRYPT_HOST=nc.domain.com
+      - LETSENCRYPT_EMAIL=email@domain.com
+
+  nc-db:
+    image: mariadb
+    volumes:
+      - ./nc/nc-db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=nextcloud
+      - MYSQL_PASSWORD=nextcloud
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud

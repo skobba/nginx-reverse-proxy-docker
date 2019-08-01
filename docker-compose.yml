@@ -1,55 +1,47 @@
-version: '2'
+version: '3'
 
-  nginx-proxy:
-    image: jwilder/nginx-proxy
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - "/etc/nginx/vhost.d"
-      - "./proxy-default.conf:/etc/nginx/conf.d/my-proxy.default.conf:ro"
-      - "/usr/share/nginx/html"
-      - "/var/run/docker.sock:/tmp/docker.sock:ro"
-      - "./le-cert:/etc/nginx/certs:ro"
-    labels:
-      com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy: "true"
+volumes:
+  postgres_data:
+      driver: local
 
-  letsencrypt-nginx-proxy-companion:
-    image: jrcs/letsencrypt-nginx-proxy-companion
-    restart: unless-stopped
-    depends_on:
-      - nginx-proxy
-    container_name: le-proxy-companion
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "./le-cert:/etc/nginx/certs:rw"
-    volumes_from:
-      - nginx-proxy
-
+services:
+  postgres:
+      image: postgres
+      volumes:
+        - postgres_data:/var/lib/postgresql/data
+      environment:
+        POSTGRES_DB: keycloak
+        POSTGRES_USER: keycloak
+        POSTGRES_PASSWORD: password
+      ports:
+        - 5432:5432
   keycloak:
-    image: jboss/keycloak
-    links:
-      - keycloak-postgres:postgres
-    ports:
-      - 8080:8080
-    volumes:
-      - ./keycloak:/opt/jboss/keycloak
-    environment:
-      - KEYCLOAK_USER=admin
-      - KEYCLOAK_PASSWORD=admin
-      - "PROXY_ADDRESS_FORWARDING=true"
-      - VIRTUAL_PORT=8080
-      - VIRTUAL_HOST=kc.domain.com
-      - LETSENCRYPT_HOST=kc.domain.com
-      - LETSENCRYPT_EMAIL=email@domain.com
+      image: jboss/keycloak
+      environment:
+        DB_VENDOR: POSTGRES
+        DB_ADDR: postgres
+        DB_DATABASE: keycloak
+        DB_USER: keycloak
+        DB_SCHEMA: public
+        DB_PASSWORD: password
+        KEYCLOAK_USER: admin
+        KEYCLOAK_PASSWORD: Pa55w0rd
+        # Uncomment the line below if you want to specify JDBC parameters. The parameter below is just an example, and it shouldn't be used in production without knowledge. It is highly recommended that you read the PostgreSQL JDBC driver documentation in order to use it.
+        #JDBC_PARAMS: "ssl=true"
+      ports:
+        - 8080:8080
+      depends_on:
+        - postgres
 
-  keycloak-postgres:
-    image: postgres
+  nc-db:
+    image: mariadb
+    volumes:
+      - ./nc/nc-db:/var/lib/mysql
     environment:
-      - POSTGRES_DB=keycloak
-      - POSTGRES_USER=keycloak
-      - POSTGRES_PASSWORD=keycloak
+      - MYSQL_ROOT_PASSWORD=nextcloud
+      - MYSQL_PASSWORD=nextcloud
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
 
   nextcloud:
     image: hoellen/nextcloud
@@ -58,8 +50,8 @@ version: '2'
       - APC_SHM_SIZE=128M
       - OPCACHE_MEM_SIZE=128
       - CRON_PERIOD=15m
-      - TZ=Europe/Berlin
-      - DOMAIN=nc.domain.com
+      - TZ=Europe/Oslo
+      - DOMAIN=nc.lawandorder.ai
       - ADMIN_USER=admin
       - ADMIN_PASSWORD=admin
       - DB_TYPE=mysql
@@ -73,16 +65,8 @@ version: '2'
       - ./nc/nc-apps:/apps2
       - ./nc/nc-themes:/nextcloud/themes
     environment:
-      - VIRTUAL_HOST=nc.domain.com
-      - LETSENCRYPT_HOST=nc.domain.com
-      - LETSENCRYPT_EMAIL=email@domain.com
-
-  nc-db:
-    image: mariadb
-    volumes:
-      - ./nc/nc-db:/var/lib/mysql
-    environment:
-      - MYSQL_ROOT_PASSWORD=nextcloud
-      - MYSQL_PASSWORD=nextcloud
-      - MYSQL_DATABASE=nextcloud
-      - MYSQL_USER=nextcloud
+      - VIRTUAL_HOST=nc.lawandorder.ai
+      - LETSENCRYPT_HOST=nc.lawandorder.ai
+      - LETSENCRYPT_EMAIL=admin@lawandorder.ai
+    ports:
+      - 80:8081

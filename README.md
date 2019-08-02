@@ -10,7 +10,11 @@ docker-compose up -d
 docker run -p 8080:8080 jboss/keycloak
 
 # Container Shell
-docker exec -it 92c22487644a sh
+docker exec -it d06c64f5607b sh
+docker exec -it nextcloud_app_1 sh
+docker exec -it nextcloud_letsencrypt-companion_1 sh
+docker exec -it nextcloud_proxy_1 sh
+
 
 
 # Creating admin account

@@ -1,6 +1,14 @@
 version: '3'
 
 services:
+  hello-world-web:
+    image: crccheck/hello-world
+    ports:
+      - 8000:8888
+    networks:
+      - proxy-tier
+      - default
+
   db:
     image: mariadb
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
@@ -18,7 +26,7 @@ services:
     volumes:
       - nextcloud:/var/www/html
     environment:
-      - VIRTUAL_HOST=
+      - VIRTUAL_HOST=drive.lawandorder.ai
       - LETSENCRYPT_HOST=drive.lawandorder.ai
       - LETSENCRYPT_EMAIL=admin@lawandorder.ai
       - MYSQL_HOST=db

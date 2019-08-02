@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  hello-world-web:
+    image: crccheck/hello-world
+    ports:
+      - 8000:8888
+    networks:
+      - proxy-tier
+      - default

@@ -1,0 +1,34 @@
+letsencrypt-companion_1  | Generating a RSA private key
+letsencrypt-companion_1  | .........................................................................................................................................++++
+letsencrypt-companion_1  | .............................................................................................++++
+letsencrypt-companion_1  | writing new private key to '/etc/nginx/certs/default.key.new'
+letsencrypt-companion_1  | -----
+letsencrypt-companion_1  | Info: a default key and certificate have been created at /etc/nginx/certs/default.key and /etc/nginx/certs/default.crt.
+letsencrypt-companion_1  | Info: Creating Diffie-Hellman group in the background.
+letsencrypt-companion_1  | A pre-generated Diffie-Hellman group will be used for now while the new one
+letsencrypt-companion_1  | is being created.
+letsencrypt-companion_1  | Generating DH parameters, 2048 bit long safe prime, generator 2
+letsencrypt-companion_1  | Reloading nginx proxy (27649ffb7627c9dcd969d8085793525f5e04bbb5b167555c1d534787a6100efc)...
+letsencrypt-companion_1  | 2019/08/01 12:34:03 Generated '/etc/nginx/conf.d/default.conf' from 5 containers
+letsencrypt-companion_1  | 2019/08/01 12:34:04 Generated '/app/letsencrypt_service_data' from 5 containers
+letsencrypt-companion_1  | 2019/08/01 12:34:04 Running '/app/signal_le_service'
+letsencrypt-companion_1  | 2019/08/01 12:34:04 Watching docker events
+letsencrypt-companion_1  | 2019/08/01 12:34:04 Contents of /app/letsencrypt_service_data did not change. Skipping notification '/app/signal_le_service'
+letsencrypt-companion_1  | /etc/nginx/certs/drive.lawandorder.ai /app
+letsencrypt-companion_1  | Reloading nginx proxy (27649ffb7627c9dcd969d8085793525f5e04bbb5b167555c1d534787a6100efc)...
+letsencrypt-companion_1  | 2019/08/01 12:34:05 Contents of /etc/nginx/conf.d/default.conf did not change. Skipping notification ''
+letsencrypt-companion_1  | Creating/renewal drive.lawandorder.ai certificates... (drive.lawandorder.ai)
+letsencrypt-companion_1  | 2019-08-01 12:34:07,164:INFO:simp_le:1382: Generating new account key
+letsencrypt-companion_1  | 2019-08-01 12:34:09,762:INFO:simp_le:1407: By using simp_le, you implicitly agree to the CA's terms of service: https://letsencrypt.org/documents/LE-SA-v1.2-November-15-2017.pdf
+letsencrypt-companion_1  | 2019-08-01 12:34:10,839:INFO:simp_le:1479: Generating new certificate private key
+letsencrypt-companion_1  | 2019-08-01 12:34:13,301:ERROR:simp_le:1446: CA marked some of the authorizations as invalid, which likely means it could not access http://example.com/.well-known/acme-challenge/X. Did you set correct path in -d example.com:path or --default_root? Are all your domains accessible from the internet? Please check your domains' DNS entries, your host's network/firewall setup and your webserver config. If a domain's DNS entry has both A and AAAA fields set up, some CAs such as Let's Encrypt will perform the challenge validation over IPv6. If your DNS provider does not answer correctly to CAA records request, Let's Encrypt won't issue a certificate for your domain (see https://letsencrypt.org/docs/caa/). Failing authorizations: https://acme-v01.api.letsencrypt.org/acme/authz/D0__9bu3389szbULMMEpnqTgpj-EjGdJlUw-svvkMmQ
+letsencrypt-companion_1  | 2019-08-01 12:34:13,305:INFO:simp_le:360: Saving account_key.json
+letsencrypt-companion_1  | Challenge validation has failed, see error log.
+letsencrypt-companion_1  |
+letsencrypt-companion_1  | Debugging tips: -v improves output verbosity. Help is available under --help.
+letsencrypt-companion_1  | /app
+letsencrypt-companion_1  | Sleep for 3600s
+letsencrypt-companion_1  | This is going to take a long time
+letsencrypt-companion_1  | Info: Diffie-Hellman group creation complete, reloading nginx.
+letsencrypt-companion_1  | Reloading nginx proxy (27649ffb7627c9dcd969d8085793525f5e04bbb5b167555c1d534787a6100efc)...
+letsencrypt-companion_1  | 2019/08/01 12:34:46 Contents of /etc/nginx/conf.d/default.conf did not change. Skipping notification ''
